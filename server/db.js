@@ -63,7 +63,7 @@ INSERT INTO reservations(id, date, party_count, restaurant_id, customer_id) VALU
     restaurantName,
     customerName,
   ]);
-
+  console.log("reservation created");
   return result.rows[0];
 };
 const init = async () => {
@@ -104,28 +104,15 @@ const init = async () => {
 
   await createReservation("Bob", "Nobu", "2025-02-14", 2);
 };
-const destroyReservation = async (
-  customerName,
-  restaurantName,
-  date,
-  partyCount
-) => {
-  console.log(
-    "Deleting Reservation",
-    customerName,
-    restaurantName,
-    date,
-    partyCount
-  );
+
+const destroyReservation = async ({ id, customer_id }) => {
+  console.log("destoy attempt");
   const SQL = `
-      DELETE FROM reservations  
-      WHERE date = $1 
-      AND party_count = $2
-      AND restaurant_id = (SELECT id FROM restaurants WHERE name = $3)
-      AND customer_id = (SELECT id FROM customers WHERE name = $4)
-      RETURNING *;
-  `;
-  await client.query(SQL, [date, partyCount, restaurantName, customerName]);
+        DELETE FROM reservations
+        WHERE id = $1 and customer_id = $2
+      `;
+  
+  await client.query(SQL, [id, customer_id]);
 };
 
 module.exports = {

@@ -28,21 +28,6 @@ app.get("/api/reservations", async (req, res, next) => {
   }
 });
 
-app.delete(
-  "/api/customers/:customer_id/reservations/:id",
-  async (req, res, next) => {
-    try {
-      await destroyReservation({
-        customer_id: req.params.customer_id,
-        id: req.params.id,
-      });
-      res.sendStatus(204);
-    } catch (ex) {
-      next(ex);
-    }
-  }
-);
-
 app.post("/api/customers/:customer_id/reservations", async (req, res, next) => {
   try {
     res.status(201).send(
@@ -56,6 +41,24 @@ app.post("/api/customers/:customer_id/reservations", async (req, res, next) => {
     next(ex);
   }
 });
+app.delete(
+  "/api/customers/:customer_id/reservations/:id",
+  async (req, res, next) => {
+    try {
+      
+      await db.destroyReservation({
+        id: req.params.id,
+        customer_id: req.params.customer_id,
+      });
+      
+      res.sendStatus(204);
+      
+      
+    } catch (ex) {
+      next(ex);
+    }
+  }
+);
 
 app.use((err, req, res, next) => {
   res.status(err.status || 500).send({ error: err.message || err });
@@ -63,7 +66,7 @@ app.use((err, req, res, next) => {
 
 const init = async () => {
   console.log("connecting to database");
-  app.listen(3000, () => console.log("listening on port 3000"));
+  app.listen(3000, () => console.log("listening on port 3001"));
   await db.init();
 };
 
