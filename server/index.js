@@ -45,15 +45,13 @@ app.delete(
 
 app.post("/api/customers/:customer_id/reservations", async (req, res, next) => {
   try {
-    res
-      .status(201)
-      .send(
-        await createReservation({
-          customer_id: req.params.customer_id,
-          restaurant_id: req.body.restaurant_id,
-          reservation_date: req.body.reservation_date,
-        })
-      );
+    res.status(201).send(
+      await createReservation({
+        customer_id: req.params.customer_id,
+        restaurant_id: req.body.restaurant_id,
+        reservation_date: req.body.reservation_date,
+      })
+    );
   } catch (ex) {
     next(ex);
   }
@@ -64,6 +62,7 @@ app.use((err, req, res, next) => {
 });
 
 const init = async () => {
+  console.log("connecting to database");
   app.listen(3000, () => console.log("listening on port 3000"));
   await db.init();
 };

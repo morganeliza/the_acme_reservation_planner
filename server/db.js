@@ -63,6 +63,7 @@ INSERT INTO reservations(id, date, party_count, restaurant_id, customer_id) VALU
     restaurantName,
     customerName,
   ]);
+
   return result.rows[0];
 };
 const init = async () => {
