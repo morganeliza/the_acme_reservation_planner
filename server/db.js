@@ -5,14 +5,13 @@ const client = new pg.Client(
   "postgres://morganmaccarthy:postgres@localhost:5432/acme_dining_db"
 );
 
-
 const getCustomers = async () => {
-    const SQL = `
+  const SQL = `
     SELECT * from customers;
-  `
-  const result = await client.query(SQL)
+  `;
+  const result = await client.query(SQL);
   return result.rows[0];
-}
+};
 
 const createCustomer = async (customerName) => {
   const SQL = `
@@ -22,12 +21,29 @@ INSERT INTO customers(id, name) VALUES($1, $2) RETURNING *
   return result.rows[0];
 };
 
+const getRestaurants = async () => {
+  const SQL = `
+    SELECT * from restaurants;
+  `;
+  const result = await client.query(SQL);
+  return result.rows[0];
+};
+
 const createRestaurant = async (restaurantName) => {
   const SQL = `
 INSERT INTO restaurants(id, name) VALUES($1, $2) RETURNING *
 `;
   const result = await client.query(SQL, [uuid.v4(), restaurantName]);
   return result.rows[0];
+};
+
+const getReservations = async () => {
+  const SQL = `
+      SELECT *
+      FROM reservations
+  `;
+  const response = await client.query(SQL);
+  return response.rows[0];
 };
 
 const createReservation = async (
@@ -76,16 +92,39 @@ const init = async () => {
     ); `;
   const result = await client.query(SQL);
 
-    (["Bob", "Jan", "Jerry"]).forEach(async (name) => {
-      await createCustomer(name);
-      console.log("customer created: " + name);
-    });
+  ["Bob", "Jan", "Jerry"].forEach(async (name) => {
+    await createCustomer(name);
+    console.log("customer created: " + name);
+  });
   ["Nobu", "76", "Chili's"].forEach(async (name) => {
     await createRestaurant(name);
     console.log("restaurant created: " + name);
   });
 
   await createReservation("Bob", "Nobu", "2025-02-14", 2);
+};
+const destroyReservation = async (
+  customerName,
+  restaurantName,
+  date,
+  partyCount
+) => {
+  console.log(
+    "Deleting Reservation",
+    customerName,
+    restaurantName,
+    date,
+    partyCount
+  );
+  const SQL = `
+      DELETE FROM reservations  
+      WHERE date = $1 
+      AND party_count = $2
+      AND restaurant_id = (SELECT id FROM restaurants WHERE name = $3)
+      AND customer_id = (SELECT id FROM customers WHERE name = $4)
+      RETURNING *;
+  `;
+  await client.query(SQL, [date, partyCount, restaurantName, customerName]);
 };
 
 module.exports = {
@@ -94,4 +133,7 @@ module.exports = {
   createRestaurant,
   createReservation,
   getCustomers,
+  getRestaurants,
+  getReservations,
+  destroyReservation,
 };
