@@ -1,0 +1,21 @@
+{
+  "name": "the_acme_reservation_planner",
+  "version": "1.0.0",
+  "description": "block 34 workshop",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server",
+    "start:dev": "nodemon server"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "morgan": "^1.10.0",
+    "pg": "^8.13.2",
+    "uuid": "^11.0.5"
+  }
+}
